@@ -1,18 +1,25 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from flask import Flask
-app = Flask(__name__, static_url_path='')
+from flask import render_template
+app = Flask(__name__, static_url_path='/static')
+
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
-
-from flask import render_template
-
-@app.route('/hello/')
-@app.route('/hello/<name>')
-@app.route('/hello/<name>/')
-def hello(name=None):
-    return render_template('index.html', name=name)
+def index():
+    buttons = [
+        {
+            'key': 'mainserver',
+            'text': 'Kodeks server',
+            'checked': True,
+        },
+        {
+            'key': 'reserveserver',
+            'text': u'Резервный сервер',
+            'checked': False,
+        },
+    ]
+    return render_template('index.html', buttons=buttons)
 
 if __name__ == '__main__':
     app.run()
