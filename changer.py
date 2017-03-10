@@ -40,10 +40,18 @@ class ClientFileChanger(object):
                 self.host = valid_match.group(1)
                 break
         if not self.host:
-            raise SearchLineNotFound('line started from "host" not found')
+            raise SearchLineNotFound('line in config with key "host" not found')
 
     def valid(self, line):
-        return re.match(r'^(?!#)(?:\s*?)host(?:\s*?)=\s*([A-Za-z0-9\._]*)', line.strip())
+        # this regex is
+        # (?!#) - not started from '#' symbol
+        # (?:\s*?) - empty spaces/tabs
+        # host - static 'host' keyword
+        # (?:\s*?) - empty spaces/tabs
+        # = static symbol '='
+        # (?:\s*?) - empty spaces/tabs
+        # ([A-Za-z0-9\._]*)' - main regex for hostname or ip addr
+        return re.match(r'^(?!#)(?:\s*?)host(?:\s*?)=(?:\s*?)([A-Za-z0-9\._]*)', line.strip())
 
     def switch_to_next_host(self):
         server_found = False
@@ -63,4 +71,5 @@ class ClientFileChanger(object):
         return new_server
 
     def replace_by(self, server_name, data):
+        # TODO make replace server name in config by replace file
         pass
