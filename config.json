@@ -1,0 +1,17 @@
+{
+  "mainserver": {
+    "text": "Kodeks server",
+    "address": "10.0.0.12",
+    "checked": true
+  },
+  "thirdserver": {
+    "text": "secondary сервер",
+    "address": "10.0.0.44",
+    "checked": false
+  },
+  "reserveserver": {
+    "text": "Резервный сервер",
+    "address": "46.206.207.20",
+    "checked": false
+  }
+}
