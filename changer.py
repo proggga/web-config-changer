@@ -2,8 +2,11 @@ import re
 import os
 import json
 import collections
-from errors import FileNotFoundException
+from tempfile import mkstemp
+from shutil import move
+from errors import FileNotFound
 from errors import SearchLineNotFound
+from errors import SetHostIpNotFound
 
 class ClientFileChanger(object):
 
@@ -35,23 +38,17 @@ class ClientFileChanger(object):
         for line in self.file_content.split('\n'):
             valid_match = self.valid(line)
             if valid_match:
-                print "found line, saving: {}".format(line)
-                print valid_match.groups()
                 self.host = valid_match.group(1)
                 break
         if not self.host:
             raise SearchLineNotFound('line in config with key "host" not found')
 
     def valid(self, line):
-        # this regex is
-        # (?!#) - not started from '#' symbol
-        # (?:\s*?) - empty spaces/tabs
-        # host - static 'host' keyword
-        # (?:\s*?) - empty spaces/tabs
-        # = static symbol '='
-        # (?:\s*?) - empty spaces/tabs
-        # ([A-Za-z0-9\._]*)' - main regex for hostname or ip addr
-        return re.match(r'^(?!#)(?:\s*?)host(?:\s*?)=(?:\s*?)([A-Za-z0-9\._]*)', line.strip())
+        return re.match(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)', line.strip())
+
+    def valid_substring(self, line):
+        return re.sub(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)',\
+            'host = {}'.format(self.host), line.strip())+"\r\n"
 
     def switch_to_next_host(self):
         server_found = False
@@ -68,8 +65,28 @@ class ClientFileChanger(object):
             server_name = self.hosts.keys()[0]
             data = self.hosts[server_name]
             new_server = server_name, data
-        return new_server
+        server_name, data = new_server
+        self.host = data['address']
+        self.replace()
 
-    def replace_by(self, server_name, data):
-        # TODO make replace server name in config by replace file
-        pass
+    def set_host(self, hostname=None, ipaddress=None):
+        iphost_list = sum([(key, value['address']) for key, value in self.hosts.items()], ())
+        if hostname in iphost_list:
+            host_index = iphost_list.index(hostname)
+            self.host = iphost_list[host_index+1]
+        elif ipaddress in iphost_list:
+            self.host = ipaddress
+        else:
+            raise SetHostIpNotFound('Ip addr ({}) or hostname ({}) not found '\
+                .format(hostname, ipaddress))
+        self.replace()
+
+    def replace(self):
+        file_handler, absolute_path = mkstemp()
+        with open(absolute_path, 'w') as temp_file:
+            with open(self.file) as current_file:
+                for line in current_file:
+                    temp_file.write(self.valid_substring(line))
+        os.close(file_handler)
+        os.remove(self.file)
+        move(absolute_path, self.file)

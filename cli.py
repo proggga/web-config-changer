@@ -4,7 +4,8 @@ from changer import ClientFileChanger
 
 changer = ClientFileChanger(path_to_file='client.ini', config_path='config.json')
 
-print changer.switch_to_next_host()
+changer.switch_to_next_host()
+
 # print new_server
 # else:
 #     print "file not in config, replacing, by first one"
