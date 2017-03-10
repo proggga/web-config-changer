@@ -9,10 +9,10 @@ class ClientFileChanger(object):
 
     def __init__(self, path_to_file='client.ini', config_path='config.json'):
         self.config_path = config_path
-        self.load_config()
         self.file = path_to_file
         self.host = None
         self.file_content = None
+        self.load_config()
         self.read_file()
         self.parse_file_content()
 
@@ -21,9 +21,7 @@ class ClientFileChanger(object):
         with open(self.config_path) as file_handler:
             self.hosts = json.JSONDecoder(object_pairs_hook=collections.OrderedDict)\
                 .decode(file_handler.read().strip())
-# with open('config.json') as file_handler:
-#     hosts = json.JSONDecoder(object_pairs_hook=collections.OrderedDict)\
-#         .decode(file_handler.read().strip())
+
     def read_file(self):
         if self.file_not_exists():
             raise FileNotFoundException('File "{}" not found'.format(self.file))
