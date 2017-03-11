@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from changer import ClientFileChanger
+import sys
+from changer import FileChanger
+from errors import SetHostIpNotFound
 
-changer = ClientFileChanger(path_to_file='client.ini', config_path='config.json')
+changer = FileChanger(path_to_file='client.ini', config_path='config.json')
 
-changer.switch_to_next_host()
-
-# print new_server
-# else:
-#     print "file not in config, replacing, by first one"
-#     for key, value in hosts.items():
-#         changer.replace_by(key, value)
-#         break
+if len(sys.argv) > 1:
+    try:
+        changer.search_and_replace(sys.argv[1])
+    except SetHostIpNotFound as ex:
+        print str(ex)
+else:
+    changer.switch_to_next_host()
