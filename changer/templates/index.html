@@ -22,27 +22,32 @@
   </head>
   <body>
     <div class="container">
-      <div class="vcenter">
-        <div class="row vertical-center-row">
-          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
-            {% if name %}
-              <h1>Hello {{ name }}!</h1>
-            {% else %}
-              <h1>Добро пожаловать в панель переключения доступом kk.kodeks.ru</h1>
-            {% endif %}
-          </div>
-          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
-            <div class="btn-group" data-toggle="buttons">
-              {% for item in buttons %}
-                <label class="btn btn-primary {{ 'active' if item.checked else '' }}">
-                  <input type="radio" name="options" id="{{item.key}}" autocomplete="off" {{ 'checked' if item.checked else '' }}>{{item.text}}
-                </label>
-              {% endfor %}
+      <form method="post">
+        <div class="vcenter">
+          <div class="row vertical-center-row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+              {% if name %}
+                <h1>Hello {{ name }}!</h1>
+              {% else %}
+                <h1>{{ maintitle }}</h1>
+              {% endif %}
             </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+              <div class="btn-group" data-toggle="buttons">
+                {% for key, item in hosts.items() %}
+                  <label class="btn btn-primary {{ 'active' if item.checked else '' }}">
+                    <input type="radio" name="options" id="{{key}}" value="{{key}}" autocomplete="off" {{ 'checked' if item.checked else '' }}>{{item.text}}
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+              <button type="submit" class="btn btn-success">Сохранить</button>
+            </div>
+            <div class='loader'></div>
           </div>
-          <div class='loader'></div>
         </div>
-      </div>
+      </form>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

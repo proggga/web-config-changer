@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 import sys
 from changer.FileChanger import FileChanger
-from changer import Error
+from changer import Error, log
 
-changer = FileChanger(path_to_file='example/client.ini', config_path='config.json')
+log.set_logging()
+
+changer = FileChanger(config_path='config.json')
 
 if len(sys.argv) > 1:
     try:
