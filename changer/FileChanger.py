@@ -1,12 +1,11 @@
+# -*- coding: utf-8 -*-
 import re
 import os
 import json
 import collections
 from tempfile import mkstemp
 from shutil import move
-from errors import FileNotFound
-from errors import SearchLineNotFound
-from errors import SetHostIpNotFound
+from changer import Error
 
 class FileChanger(object):
 
@@ -28,7 +27,7 @@ class FileChanger(object):
 
     def read_file(self):
         if self.file_not_exists():
-            raise FileNotFound('File "{}" not found'.format(self.file))
+            raise Error.FileNotFound('File "{}" not found'.format(self.file))
         with open(self.file) as file_handler:
             self.file_content = file_handler.read()
 
@@ -43,7 +42,7 @@ class FileChanger(object):
                 break
         print "Current address is {}".format(self.host)
         if not self.host:
-            raise SearchLineNotFound('line in config with key "host" not found')
+            raise Error.SearchLineNotFound('line in config with key "host" not found')
 
     def valid(self, line):
         return re.match(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)', line.strip())
@@ -86,10 +85,10 @@ class FileChanger(object):
             self.set_host_ip(self.hosts[hostname]['address'])
         else:
             if ipaddress:
-                raise SetHostIpNotFound('IP address {} not found '\
+                raise Error.SetHostIpNotFound('IP address {} not found '\
                     .format(ipaddress))
             else:
-                raise SetHostIpNotFound('Hostname {} not found '\
+                raise Error.SetHostIpNotFound('Hostname {} not found '\
                     .format(hostname))
 
     def replace(self):

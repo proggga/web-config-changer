@@ -1,9 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from flask import Flask
 from flask import render_template
 app = Flask(__name__, static_url_path='/static')
-
+# static_url_path='/static', static_folder='./changer/static/'
 
 @app.route('/')
 def index():
@@ -20,6 +19,3 @@ def index():
         },
     ]
     return render_template('index.html', buttons=buttons)
-
-if __name__ == '__main__':
-    app.run()
