@@ -55,15 +55,15 @@ class FileChanger(object):
             raise Error.SearchLineNotFound('line in config with key "host" not found')
         logging.info("Server {} with address {} active now".format(self.hostname, self.host_address))
         if not self.hostname:
-            raise Error.SearchLineNotFound('Not found in valid hostname for {} in {}'\
-                .format(self.host_address, self.config_path))
+            logging.info("config have no '{}' record, replacing by first record in config".format(self.host_address))
+            self.switch_to_next_host()
 
     def valid(self, line):
         return re.match(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)', line.strip())
 
     def valid_substring(self, line):
         return re.sub(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)',\
-            'host = {}'.format(self.host_address), line.strip())+"\r\n"
+            'host = {}'.format(self.host_address), line.strip())
 
     def switch_to_next_host(self):
         server_found = False
@@ -72,15 +72,19 @@ class FileChanger(object):
         for server_name in self.hosts:
             data = self.hosts[server_name]
             if server_found:
+                logging.debug("replacing by next {} {}".format(server_name, data))
                 new_server = server_name, data
                 break
             elif server_name == self.host_address or data['address'] == self.host_address:
+                logging.debug("found new server {} {} {}".format(server_name, data, self.host_address))
                 server_found = True
         if not new_server:
+            logging.debug("if not new_server set by default")
             server_name = self.hosts.keys()[0]
             data = self.hosts[server_name]
             new_server = server_name, data
         server_name, data = new_server
+        self.hostname = server_name
         self.set_host_ip(data['address'])
 
     def set_host_ip(self, address):
@@ -109,12 +113,17 @@ class FileChanger(object):
                 raise Error.SetHostIpNotFound('Hostname {} not found '\
                     .format(hostname))
 
+    def appendNewLine(self, line):
+        if line != '\r' and line != '':
+            return '\r\n'
+        else:
+            return ''
+
     def replace(self):
-        file_handler, absolute_path = mkstemp()
-        with open(absolute_path, 'w') as temp_file:
-            with open(self.file) as current_file:
-                for line in current_file:
-                    temp_file.write(self.valid_substring(line))
-        os.close(file_handler)
-        os.remove(self.file)
-        move(absolute_path, self.file)
+        with open(self.file, 'r+') as file_handler:
+            file_content = file_handler.read()
+            file_handler.seek(0)
+            for line in file_content.split('\n'):
+                file_handler.write(self.valid_substring(line)+self.appendNewLine(line))
+            file_handler.truncate()
+            file_handler.close()
