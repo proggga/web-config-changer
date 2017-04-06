@@ -4,12 +4,14 @@
   "hosts": {
     "main server": {
       "text": "Kodeks server",
-      "address": "kk.kodeks.ru",
+      "address": "46.226.227.20",
+      "port": "8888",
       "checked": true
     },
     "reserve server": {
       "text": "Резервный сервер",
       "address": "46.226.227.20",
+      "port": "8081",
       "checked": false
     }
   }
