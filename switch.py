@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
+from changer.constants import EXIT_CODE
+from changer.constants import LOG_LEVEL
+from changer import Error
 from changer.FileChanger import FileChanger
-from changer import Error, log
-from changer.constants import EXIT_CODE, LOG_LEVEL
+from changer import log
+import sys
 
 log.set_logging(LOG_LEVEL.INFO)
 

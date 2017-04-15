@@ -1,4 +1,6 @@
 from collections import OrderedDict
+
+
 class Enum(OrderedDict):
     def __init__(self, *args):
         data = OrderedDict()

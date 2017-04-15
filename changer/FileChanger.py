@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import re
-import os
-import json
-import collections
-from tempfile import mkstemp
-from shutil import move
 from changer import Error
+import collections
+import json
 import logging
+import os
+import re
+
 
 class FileChanger(object):
 
@@ -55,38 +54,46 @@ class FileChanger(object):
                     data.checked = host == self.hostname
                 break
         if not self.host_address:
-            raise Error.SearchLineNotFound('line in config with key "host" not found')
-        logging.info("Server {} with address {} active now".format(self.hostname, self.host_address))
+            message = 'line in config with key "host" not found'
+            raise Error.SearchLineNotFound(message)
+        logging.info("Server {} with address {} active now"
+                     .format(self.hostname, self.host_address))
         if not self.hostname:
-            logging.info("config have no '{}' record, replacing by first record in config".format(self.host_address))
+            message = "config have no '{}' record, replacing by first" \
+                      "record in config".format(self.host_address)
+            logging.info(message)
             self.switch_to_next_host()
 
     def valid_host(self, line):
-        return re.match(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)', line.strip())
+        return re.match(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)',
+                        line.strip())
 
     def valid_port(self, line):
-        return re.match(r'^(?!#)(?:\s*)port(?:\s*)=(?:\s*)([0-9\._]*)', line.strip())
+        return re.match(r'^(?!#)(?:\s*)port(?:\s*)=(?:\s*)([0-9\._]*)',
+                        line.strip())
 
     def valid_substring(self, line):
-        return re.sub(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)',\
-            'host = {}'.format(self.host_address), line.strip())
+        return re.sub(r'^(?!#)(?:\s*)host(?:\s*)=(?:\s*)([A-Za-z0-9\._]*)',
+                      'host = {}'.format(self.host_address), line.strip())
 
     def valid_substring_port(self, line):
-        return re.sub(r'^(?!#)(?:\s*)port(?:\s*)=(?:\s*)([0-9]*)',\
-            'port = {}'.format(self.host_port), line.strip())
+        return re.sub(r'^(?!#)(?:\s*)port(?:\s*)=(?:\s*)([0-9]*)',
+                      'port = {}'.format(self.host_port), line.strip())
 
     def switch_to_next_host(self):
         server_found = False
         new_server = None
-        # host_lists = sum([(key, value['address']) for key, value in self.host_addresss.items()], ())
         for server_name in self.hosts:
             data = self.hosts[server_name]
             if server_found:
-                logging.debug("replacing by next {} {}".format(server_name, data))
+                message = "replacing by next {} {}".format(server_name, data)
+                logging.debug(message)
                 new_server = server_name, data
                 break
-            elif server_name == self.host_address or data['address'] == self.host_address:
-                logging.debug("found new server {} {} {}".format(server_name, data, self.host_address))
+            elif (server_name == self.host_address or
+                    data['address'] == self.host_address):
+                logging.debug("found new server {} {} {}"
+                              .format(server_name, data, self.host_address))
                 server_found = True
         if not new_server:
             logging.debug("if not new_server set by default")
@@ -99,7 +106,8 @@ class FileChanger(object):
         self.set_host_port(data['port'])
 
     def set_host_ip(self, address):
-        logging.info("Host {} changed to {}".format(self.host_address, address))
+        logging.info("Host {} changed to {}"
+                     .format(self.host_address, address))
         self.host_address = address
         self.replace()
 
@@ -124,11 +132,11 @@ class FileChanger(object):
             self.set_host_ip(ipaddress)
         else:
             if ipaddress:
-                raise Error.SetHostIpNotFound('IP address {} not found '\
-                    .format(ipaddress))
+                raise Error.SetHostIpNotFound('IP address {} not found '
+                                              .format(ipaddress))
             else:
-                raise Error.SetHostIpNotFound('Hostname {} not found '\
-                    .format(hostname))
+                raise Error.SetHostIpNotFound('Hostname {} not found '
+                                              .format(hostname))
 
     def appendNewLine(self, line):
         if line != '\r' and line != '':
