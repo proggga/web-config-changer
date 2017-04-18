@@ -1,12 +1,14 @@
-from changer.enum import Enum
+# coding: utf-8
+'''Module with constants'''
+from changer.dot_dict import DotDict
 
-EXIT_CODE = Enum(
+EXIT_CODE = DotDict(
     'SUCCESS',
     'WARNING',
     'ERROR'
 )
 
-LOG_LEVEL = Enum({
+LOG_LEVEL = DotDict({
     "CRITICAL": 50,
     "ERROR":    40,
     "WARNING":  30,

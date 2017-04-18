@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+# coding: utf-8
+'''
+Web application point of entry
+'''
 
 from changer.constants import LOG_LEVEL
 from changer import log
-from changer.webapp import app
+from changer.webapp import APP
 
 log.set_logging(LOG_LEVEL.INFO)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    APP.run(host='0.0.0.0')
