@@ -12,7 +12,7 @@ class DotDict(OrderedDict):
         data = OrderedDict()
         if len(args) == 1:
             keys = args[0]
-            if isinstance(keys, list) or isinstance(keys, tuple):
+            if isinstance(keys, (list, tuple)):
                 for index, key in enumerate(keys):
                     data[key] = index
             else:

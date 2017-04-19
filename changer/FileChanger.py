@@ -166,7 +166,7 @@ class FileChanger(object):
     @staticmethod
     def append_new_line(line):
         '''apend line if it not empty line'''
-        if line != '\r' and line != '':
+        if line not in ['\r', '']:
             return '\r\n'
         else:
             return ''
