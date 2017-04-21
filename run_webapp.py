@@ -2,6 +2,7 @@
 # coding: utf-8
 '''
 Web application point of entry
+by proggga
 '''
 
 from changer.constants import LOG_LEVEL
